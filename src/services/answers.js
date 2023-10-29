@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3003/api/answers'
+const baseUrl = 'http://localhost:3000/api/answers'
 
 let token = null
 
@@ -27,6 +27,20 @@ const get = async newObject => {
   return response.data
 }
 
+const getRandom = async () => {
+  //console.log('answerService')
+  const response = await axios.get(`${ baseUrl }/rand`)
+  //console.log('response: ', response)
+  return response.data
+}
+
+const getRandByTopic = async topic => {
+  //console.log('topic.id: ', topic.id)
+  const response = await axios.get(`${ baseUrl }/randTopic/${topic.id}`)
+  //console.log('response: ', response)
+  return response.data
+}
+
 const update = async newObject => {
   const response = await axios.put(`${ baseUrl }/${newObject.id}`, newObject)
   return response.data
@@ -37,4 +51,4 @@ const erase = async oldObject => {
   return response.data
 }
 
-export default { getAll, create, get, update, setToken, erase }
+export default { getAll, create, get, getRandom, getRandByTopic, update, setToken, erase }

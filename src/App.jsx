@@ -1,118 +1,64 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
 import loginService from './services/login'
+import answerService from './services/answers'
+import topicService from './services/topics'
+import userService from './services/users'
 import LoginForm from './components/LoginForm'
+import SignupForm from './components/SignupForm'
+import Switchable from './components/Switchable'
 import Togglable from './components/Togglable'
-import BlogForm from './components/BlogForm'
+import TAcard from './components/TAcard'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [loginVisible, setLoginVisible] = useState(false)
-
-  const blogFormRef = useRef()
+  const [topic, setTopic] = useState(null)
+  const [answer, setAnswer] = useState(null)
 
   useEffect(() => {
-    getAllBlogs()
-
+    console.log('initial load')
+    getRandomTopicAnswer()
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      blogService.setToken(user.token)
     }
   }, [])
 
-  const getAllBlogs = async () => {
-    const Blogs = await blogService.getAll()
-    setBlogs(Blogs.sort((a, b) => a.likes - b.likes).reverse())
-  }
+  useEffect(() => {
+    console.log('user load')
+    getRandomTopicAnswer()
+  }, [user])
 
-  const addBlog = async (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    try {
-      await blogService.create(blogObject)
-      await getAllBlogs()
-      setSuccessMessage(
-        `${blogObject.title} by ${user.username} added!!`
-      )
-      setErrorMessage(null)
+  const handleSignup = async (event) => {
+    event.preventDefault()
+    try{
+      await userService.create({
+        username, password
+      })
+      setUsername('')
+      setPassword('')
+    } catch (exception) {
+      setErrorMessage('signup failed')
       setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
-    } catch(exception) {
-      setErrorMessage(
-        `Cannot update blog ${blogObject.title}`
-      )
-      setSuccessMessage(null)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
-    }
-  }
-
-  const updateBlog = async (blogObject) => {
-    try {
-      const updatedBlog = await blogService
-        .update(blogObject)
-      setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : updatedBlog))
-      setSuccessMessage(
-        `Blog ${blogObject.title} was successfully updated`
-      )
-      setErrorMessage(null)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
-    } catch(exception) {
-      setErrorMessage(
-        `Cannot update blog ${blogObject.title}`
-      )
-      setSuccessMessage(null)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
-    }
-  }
-
-  const deleteBlog = async (blogObject) => {
-    try {
-      const deletedBlog = await blogService
-        .erase(blogObject)
-      setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
-      setSuccessMessage(
-        `Blog ${blogObject.title} was successfully updated`
-      )
-      setErrorMessage(null)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
-    } catch(exception) {
-      setErrorMessage(
-        `Cannot delete blog ${blogObject.title}`
-      )
-      setSuccessMessage(null)
-      setTimeout(() => {
-        setSuccessMessage(null)
+        setErrorMessage(null)
       }, 5000)
     }
   }
 
   const handleLogin = async (event) => {
     event.preventDefault()
-
     try {
       const user = await loginService.login({
-        username, password,
+        username, password
       })
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
-      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -129,41 +75,65 @@ const App = () => {
     setUser(null)
   }
 
-  const loginForm = () => (
-    <Togglable buttonLabel="log in">
-      <LoginForm
-        handleLogin={handleLogin}
-        handleSetUsername={({ target }) => setUsername(target.value)}
-        username={username}
-        handleSetPassword={({ target }) => setPassword(target.value)}
-        password={password}
-      />
-    </Togglable>
+  const accountForm = () => (
+    <>
+      <div>account</div>
+      <Switchable leftButtonLabel="log in" rightButtonLabel="sign up">
+        <LoginForm
+          handleLogin={handleLogin}
+          handleSetUsername={({ target }) => setUsername(target.value)}
+          username={username}
+          handleSetPassword={({ target }) => setPassword(target.value)}
+          password={password}
+        />
+        <SignupForm
+          handleSignup={handleSignup}
+          handleSetUsername={({ target }) => setUsername(target.value)}
+          username={username}
+          handleSetPassword={({ target }) => setPassword(target.value)}
+          password={password}
+        />
+      </Switchable>
+    </>
   )
 
-  const blogForm = () => (
-    <Togglable buttonLabel="new Blog" ref={blogFormRef}>
-      <BlogForm
-        createBlog={addBlog}
-      />
-    </Togglable>
-  )
+  const getRandomTopicAnswer = async () => {
+    try {
+      const randomTopic = await topicService.getRandom()
+      setTopic(randomTopic)
+      await getRandomAnswer(randomTopic)
+    } catch (exception){
+      setErrorMessage(exception.message)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
+  const getRandomAnswer = async topic => {
+    try {
+      console.log('topic: ', topic)
+      const randomAnswer = await answerService.getRandByTopic(topic)
+      setAnswer(randomAnswer)
+    } catch (exception){
+      setErrorMessage(exception.message)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
 
   return (
     <div>
-      <h2>Blogs</h2>
+      {!user && accountForm()}
+      {user && <button onClick={logOut}>logOut</button>}
+      {topic && answer && user &&
+      <TAcard
+        getRandomTopicAnswer={getRandomTopicAnswer}
+        getRandomAnswer={getRandomAnswer}
+        topic={topic} answer={answer} user={user}
+      />}
       {errorMessage}{successMessage}
-      {!user && loginForm()}
-      {user && <div>
-        <p>{user.name} logged in<button onClick={logOut}>logout</button></p>
-        <h2>Create new</h2>
-        {blogForm()}
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} user={user}/>
-        )}
-      </div>
-      }
-
     </div>
   )
 }
