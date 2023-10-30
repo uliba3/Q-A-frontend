@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import styles from './mystyle.module.css'
 import loginService from './services/login'
 import answerService from './services/answers'
 import topicService from './services/topics'
@@ -7,7 +8,7 @@ import LoginForm from './components/LoginForm'
 import SignupForm from './components/SignupForm'
 import Switchable from './components/Switchable'
 import Togglable from './components/Togglable'
-import TAcard from './components/TAcard'
+import MainPage from './components/MainPage'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -16,23 +17,17 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [loginVisible, setLoginVisible] = useState(false)
-  const [topic, setTopic] = useState(null)
-  const [answer, setAnswer] = useState(null)
 
   useEffect(() => {
     console.log('initial load')
-    getRandomTopicAnswer()
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      answerService.setToken(user.token)
+      topicService.setToken(user.token)
     }
   }, [])
-
-  useEffect(() => {
-    console.log('user load')
-    getRandomTopicAnswer()
-  }, [user])
 
   const handleSignup = async (event) => {
     event.preventDefault()
@@ -59,6 +54,8 @@ const App = () => {
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
+      answerService.setToken(user.token)
+      topicService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -76,8 +73,7 @@ const App = () => {
   }
 
   const accountForm = () => (
-    <>
-      <div>account</div>
+    <div className={`${styles.parent} ${styles.modern}`}>
       <Switchable leftButtonLabel="log in" rightButtonLabel="sign up">
         <LoginForm
           handleLogin={handleLogin}
@@ -94,47 +90,18 @@ const App = () => {
           password={password}
         />
       </Switchable>
-    </>
-  )
-
-  const getRandomTopicAnswer = async () => {
-    try {
-      const randomTopic = await topicService.getRandom()
-      setTopic(randomTopic)
-      await getRandomAnswer(randomTopic)
-    } catch (exception){
-      setErrorMessage(exception.message)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
-  }
-
-  const getRandomAnswer = async topic => {
-    try {
-      console.log('topic: ', topic)
-      const randomAnswer = await answerService.getRandByTopic(topic)
-      setAnswer(randomAnswer)
-    } catch (exception){
-      setErrorMessage(exception.message)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
-  }
-
-  return (
-    <div>
-      {!user && accountForm()}
-      {user && <button onClick={logOut}>logOut</button>}
-      {topic && answer && user &&
-      <TAcard
-        getRandomTopicAnswer={getRandomTopicAnswer}
-        getRandomAnswer={getRandomAnswer}
-        topic={topic} answer={answer} user={user}
-      />}
       {errorMessage}{successMessage}
     </div>
+  )
+
+  return (
+    <>
+      {!user && accountForm()}
+      {user &&
+      <MainPage
+        logOut={logOut} user={user}
+      />}
+    </>
   )
 }
 

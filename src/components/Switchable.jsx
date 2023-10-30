@@ -1,4 +1,5 @@
 import { useState, forwardRef, useImperativeHandle } from 'react'
+import styles from '../mystyle.module.css'
 import PropTypes from 'prop-types'
 
 const Switchable = forwardRef((props, refs) => {
@@ -14,16 +15,18 @@ const Switchable = forwardRef((props, refs) => {
   })*/
 
   return (
-    <div>
-      <button onClick={() => setIsLeftVisible(true)}>{props.leftButtonLabel}</button>
-      <button onClick={() => setIsLeftVisible(false)}>{props.rightButtonLabel}</button>
+    <>
+      <div>
+        <button className={styles.modern} onClick={() => setIsLeftVisible(true)}>{props.leftButtonLabel}</button>
+        <button className={styles.modern} onClick={() => setIsLeftVisible(false)}>{props.rightButtonLabel}</button>
+      </div>
       <div style={leftVisible} className="switchableContent">
         {props.children[0]}
       </div>
       <div style={rightVisible} className="switchableContent">
         {props.children[1]}
       </div>
-    </div>
+    </>
   )
 })
 

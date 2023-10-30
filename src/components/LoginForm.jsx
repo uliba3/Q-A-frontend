@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import styles from '../mystyle.module.css'
 
 const LoginForm = ({
   handleLogin,
@@ -10,26 +11,28 @@ const LoginForm = ({
   return(
     <form onSubmit={handleLogin}>
       <div>
-        username
         <input
+          className={`${styles.modernInput} ${styles.modern}`}
           id='loginUsername'
           type="text"
           value={username}
           name="Username"
           onChange={handleSetUsername}
+          placeholder="Username"
         />
       </div>
       <div>
-        password
         <input
+          className={`${styles.modernInput} ${styles.modern}`}
           id='loginPassword'
           type="password"
           value={password}
           name="Password"
           onChange={handleSetPassword}
+          placeholder="Password"
         />
       </div>
-      <button id="login-button" type="submit">login</button>
+      <button className={styles.modern} id="login-button" type="submit">login</button>
     </form>
   )
 }
