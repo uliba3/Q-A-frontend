@@ -1,13 +1,28 @@
 import { useEffect, useState } from 'react'
+import styles from '../mystyle.module.css'
+import userService from '../services/users'
 
 const TAcard = ({
   topic,
-  answer,
-  user
+  answer
 }) => {
+  const [user, setUser] = useState(null)
+  useEffect(() => {
+    console.log('TAcard load')
+    getUser()
+  }, [answer])
+  const userId = answer.user
+  const getUser = async () => {
+    try {
+      const user = await userService.get({ userId })
+      setUser(user)
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
   return (
-    <div>
-      <div>{user.username}</div>
+    <div className={styles.modern}>
+      {user && <div>{user.username}</div>}
       <div>{topic.title}</div>
       <div>{answer.content}</div>
     </div>

@@ -3,6 +3,7 @@ import TAcard from './TAcard'
 import answerService from '../services/answers'
 import topicService from '../services/topics'
 import AnswerForm from './AnswerForm'
+import styles from '../mystyle.module.css'
 
 const MainPage = ({
   logOut,
@@ -42,7 +43,7 @@ const MainPage = ({
       <button onClick={logOut}>log out</button>
       <button onClick={() => setViewmode(!viewmode)}>change mode</button>
       {viewmode && topic && answer && <>
-        <TAcard topic={topic} answer={answer} user={user}/>
+        <TAcard topic={topic} answer={answer}/>
         <button onClick={() => getRandomAnswer(topic)}>same topic</button>
         <button onClick={() => getRandomTopicAnswer()}>different topic</button>
       </>}
