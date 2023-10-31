@@ -4,7 +4,9 @@ import userService from '../services/users'
 
 const TAcard = ({
   topic,
-  answer
+  answer,
+  getRandomAnswer,
+  getRandomTopicAnswer
 }) => {
   const [user, setUser] = useState(null)
   useEffect(() => {
@@ -20,11 +22,12 @@ const TAcard = ({
       console.log(exception)
     }
   }
+
   return (
-    <div className={styles.modern}>
-      {user && <div>{user.username}</div>}
-      <div>{topic.title}</div>
-      <div>{answer.content}</div>
+    <div className={`${styles.modern} ${styles.modernCardTA}`}>
+      <div className={`${styles.modern} ${styles.modernTitle}`} onClick={getRandomTopicAnswer}>{topic.title}</div>
+      <div className={`${styles.modern} ${styles.modernContent}`} onClick={() => getRandomAnswer(topic)}>{answer.content}</div>
+      {user && <div className={styles.modernUsername}>by {user.username}</div>}
     </div>
   )
 }

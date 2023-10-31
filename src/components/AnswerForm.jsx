@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import styles from '../mystyle.module.css'
 import answerService from '../services/answers'
 
 const AnswerForm = ({
@@ -29,25 +30,20 @@ const AnswerForm = ({
     }
   }
   return (
-    <form onSubmit={addAnswer}>
-      <div>
-        Topic:
-        <input
-          id="title"
-          value={topic.title}
-          disabled
-        />
-      </div>
-      <div>
-        Answer:
-        <input
+    <div className={`${styles.modern} ${styles.modernCardTA}`}>
+      <div className={`${styles.modern} ${styles.modernTitle}`}>{topic.title}</div>
+      <form onSubmit={addAnswer} className={`${styles.modern}`}>
+        <textarea
           id="answer"
           value={newContent}
-          onChange={event => setNewContent(event.target.value)}
+          onChange={(event) => setNewContent(event.target.value)}
+          className={`${styles.modern} ${styles.modernInput} ${styles.modernContentInput}`}
+          rows="6" // Set the number of visible rows
+          cols="40" // Set the number of visible columns
         />
-      </div>
-      <button id="submit-button" type="submit">save</button>
-    </form>
+        <button id="submit-button" type="submit" className={`${styles.modern} ${styles.modernButton}`}>save</button>
+      </form>
+    </div>
   )
 }
 

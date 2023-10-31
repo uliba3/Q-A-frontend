@@ -6,14 +6,28 @@
     transform: translate(-50%, -50%);
 }
 
+
 .modern {
     background: #f5f5fa;
     border: 1px;
     border-radius: 8px;
     color: #2a1f62;
     font-size: 1rem;
-    line-height: 1.5rem;
+    line-height: 3rem;
     padding: 15px;
+}
+
+.upperCenter {
+    position: fixed;
+    top: 18%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modernButton {
+    height: 3rem;
+    width: 3rem;
+    padding: 0px;
 }
 
 .modern:hover {
@@ -31,4 +45,34 @@
 
 .modernInput:focus {
     outline-color: transparent;
+}
+
+.modernCard {
+    height: 50%;
+    width: 50%;
+}
+
+.modernCardTA {
+    height: 35vh;
+    width: 95%;
+}
+
+.modernTitle {
+    font-size: 3rem;
+    height: 20%;
+}
+
+.modernContent {
+    font-size: 1.5rem;
+    height: 70%;
+}
+
+.modernContentInput {
+    font-size: 1rem;
+    height: 70%;
+    width: 95%;
+}
+
+.modernUsername {
+    text-align: right;
 }

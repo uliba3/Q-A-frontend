@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Switchable from './Switchable'
 import TAcard from './TAcard'
 import answerService from '../services/answers'
 import topicService from '../services/topics'
@@ -20,6 +21,7 @@ const MainPage = ({
 
   const getRandomTopicAnswer = async () => {
     try {
+      console.log('getRandomTopicAnswer')
       const randomTopic = await topicService.getRandom()
       setTopic(randomTopic)
       await getRandomAnswer(randomTopic)
@@ -37,19 +39,19 @@ const MainPage = ({
       console.log(exception)
     }
   }
-
   return (
     <>
-      <button onClick={logOut}>log out</button>
-      <button onClick={() => setViewmode(!viewmode)}>change mode</button>
-      {viewmode && topic && answer && <>
-        <TAcard topic={topic} answer={answer}/>
-        <button onClick={() => getRandomAnswer(topic)}>same topic</button>
-        <button onClick={() => getRandomTopicAnswer()}>different topic</button>
-      </>}
-      {!viewmode && <>
-        <AnswerForm topic={topic} user={user}/>
-      </>}
+      <button onClick={logOut} className={`${styles.modern} ${styles.upperCenter} ${styles.modernButton}`}>x</button>
+      <div className={`${styles.parent} ${styles.modern} ${styles.modernCard}`}>
+        <Switchable leftButtonLabel="view" rightButtonLabel="create">
+          {topic && answer &&
+            <TAcard topic={topic} answer={answer}
+              getRandomAnswer={getRandomAnswer}
+              getRandomTopicAnswer={getRandomTopicAnswer}/>}
+          {topic && user &&
+            <AnswerForm topic={topic} user={user}/>}
+        </Switchable>
+      </div>
     </>
   )
 }
